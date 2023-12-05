@@ -12,15 +12,46 @@ android {
         minSdk 30
         targetSdk 31
         versionCode 1
-        versionName "1.0"
+        versionName "1.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
-    buildTypes {
+    signingConfigs {
+        debug {
+            storeFile file('../platform.keystore')
+            storePassword 'android_box'
+            keyAlias 'android_box'
+            keyPassword 'android_box'
+        }
+
         release {
+            storeFile file('../platform.keystore')
+            storePassword 'android_box'
+            keyAlias 'android_box'
+            keyPassword 'android_box'
+        }
+    }
+
+    buildTypes {
+        debug {
+            signingConfig signingConfigs.debug
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            debuggable true
+        }
+        release {
+            signingConfig signingConfigs.release
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            debuggable false
+        }
+    }
+    def appName = "RedfinDemo";
+    android.applicationVariants.configureEach { variant ->
+        variant.outputs.configureEach {
+            outputFileName = appName +
+                    "_V" + defaultConfig.versionName + releaseTime() + ".apk"
         }
     }
     compileOptions {
@@ -30,6 +61,10 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+}
+
+def static releaseTime() {
+    return new Date().format("yyyyMMdd", TimeZone.getDefault())
 }
 
 dependencies {
